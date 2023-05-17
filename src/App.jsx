@@ -4,7 +4,7 @@ import Form from "./components/Form"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import Prices from "./components/Prices"
-import Spinners from "./components/spinners"
+import Spinners from "./components/Spinners"
 
 
  const Container = styled.div`
