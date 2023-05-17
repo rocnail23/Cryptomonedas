@@ -1,6 +1,12 @@
 import styled from "@emotion/styled"
 import image from "./assets/pngwing.png"
-import Form from "./Form"
+import Form from "./components/Form"
+import { useEffect, useState } from "react"
+import axios from "axios"
+import Prices from "./components/Prices"
+import Spinners from "./components/spinners"
+
+
  const Container = styled.div`
  max-width: 900px;
  height: 100%;
@@ -10,9 +16,9 @@ import Form from "./Form"
     grid-template-columns: repeat(2,1fr);
     column-gap: 2rem;
 
-    div:nth-child(1){
-      display: flex;
-      align-items: center;
+    div:first-child{
+        position: relative;
+        top: 100px
      }
  }
     
@@ -41,7 +47,29 @@ import Form from "./Form"
  `
 
 function App() {
+
+  const [require,setRequire] = useState({
+    currency: "",
+    cryptoCurrency: ""
+  })
+
+  const [priceResult, setPricesResult] = useState(null)
+
+  const {currency, cryptoCurrency} = require
+  const [showSpinner, setShowSpinners] = useState(false)
+
+  useEffect(() => {
+  const getPrices = async () => {
+    if(currency == "") return
+
+    const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${cryptoCurrency}&tsyms=${currency}`
+    const result = await axios.get(url)
+   setPricesResult(result.data.DISPLAY[cryptoCurrency][currency])
+  }
+  getPrices()
+  },[require])
  
+  const Component = showSpinner ?  <Spinners/> : <Prices priceResult={priceResult}/>
 
   return (
     <Container>
@@ -50,7 +78,10 @@ function App() {
        </div>
        <div>
         <Heading>Cotiza cryptomonedas al instante</Heading>
-        <Form/>
+        <Form setShowSpinners={setShowSpinners} setRequire={setRequire}/>
+
+          {Component}
+        
        </div>
     </Container>
   )
